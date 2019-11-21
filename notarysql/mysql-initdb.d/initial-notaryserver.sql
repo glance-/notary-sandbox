@@ -3,5 +3,5 @@ CREATE DATABASE IF NOT EXISTS `notaryserver`;
 CREATE USER "server"@"%" IDENTIFIED BY "";
 
 GRANT
-	ALL PRIVILEGES ON `notaryserver`.*
+	SELECT, INSERT, UPDATE, DELETE ON `notaryserver`.*
 	TO "server"@"%";

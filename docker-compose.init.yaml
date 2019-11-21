@@ -5,7 +5,7 @@ services:
     # restart here is to have it continue util it succeeds to migrate the database
     # It always fails a couple of times before beeing able to connect to the db.
     restart: on-failure
-    command: -path=/migrations/ -database mysql://server@tcp(notary_db:3306)/notaryserver up
+    command: -path=/migrations/ -database mysql://root:${NOTARY_DB_ROOT_PW}@tcp(notary_db:3306)/notaryserver up
     volumes:
         - ./migrations/server/mysql/:/migrations/
   notarysigner:
@@ -13,16 +13,16 @@ services:
     # restart here is to have it continue util it succeeds to migrate the database
     # It always fails a couple of times before beeing able to connect to the db.
     restart: on-failure
-    command: -path=/migrations/ -database mysql://signer@tcp(signer_db:3306)/notarysigner up
+    command: -path=/migrations/ -database mysql://root:${SIGNER_DB_ROOT_PW}@tcp(signer_db:3306)/notarysigner up
     volumes:
         - ./migrations/signer/mysql/:/migrations/
   notary_db:
     volumes:
       - ./notarysql/mysql-initdb.d:/docker-entrypoint-initdb.d
     environment:
-        MYSQL_RANDOM_ROOT_PASSWORD: "true"
+        MYSQL_ROOT_PASSWORD: "${NOTARY_DB_ROOT_PW}"
   signer_db:
     volumes:
       - ./notarysql/mysql-initdb.d:/docker-entrypoint-initdb.d
     environment:
-        MYSQL_RANDOM_ROOT_PASSWORD: "true"
+        MYSQL_ROOT_PASSWORD: "${SIGNER_DB_ROOT_PW}"

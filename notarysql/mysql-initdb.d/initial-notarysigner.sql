@@ -3,5 +3,5 @@ CREATE DATABASE IF NOT EXISTS `notarysigner`;
 CREATE USER "signer"@"%" IDENTIFIED BY "";
 
 GRANT
-	ALL PRIVILEGES ON `notarysigner`.*
+	SELECT, INSERT, UPDATE, DELETE ON `notarysigner`.*
 	TO "signer"@"%";
