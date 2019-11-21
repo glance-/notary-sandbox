@@ -1,0 +1,67 @@
+version: "3.7"
+services:
+  notaryserver:
+    image: notary:server
+    command: -config server-config.json
+    networks:
+      - notary_db_net
+      - signer_net
+    ports:
+      - "8080"
+      - "4443:4443"
+    depends_on:
+      - notary_db
+      - notarysigner
+    volumes:
+        - ./fixtures/root-ca.crt:/certs/root-ca.crt:ro
+        - ./fixtures/notary-server.crt:/certs/notary-server.crt:ro
+        - ./fixtures/notary-server.key:/certs/notary-server.key:ro
+    environment:
+        NOTARY_SERVER_STORAGE_DB_URL: "server:${NOTARY_DB_SERVER_PW}@tcp(mysql:3306)/notaryserver?parseTime=True"
+        NOTARY_SERVER_REPOSITORIES_GUN_PREFIXES: registry-server:5000/
+
+  notarysigner:
+    image: notary:signer
+    command: -config signer-config.json
+    environment:
+        NOTARY_SIGNER_DEFAULT_ALIAS: passwordalias1
+        NOTARY_SIGNER_PASSWORDALIAS1: "${NOTARY_SIGNER_PASSWORDALIAS1}"
+    networks:
+      - signer_db_net
+      - signer_net
+    depends_on:
+      - signer_db
+    volumes:
+        - ./fixtures/notary-signer.crt:/certs/notary-signer.crt:ro
+        - ./fixtures/notary-signer.key:/certs/notary-signer.key:ro
+        - ./fixtures/notary-server.crt:/certs/notary-server.crt:ro
+  notary_db:
+    networks:
+        notary_db_net:
+            aliases:
+                - mysql
+    volumes:
+      - notary_data:/var/lib/mysql
+    image: mariadb:10.4
+    command: mysqld --innodb_file_per_table
+  signer_db:
+    networks:
+        signer_db_net:
+            aliases:
+                - mysql
+    volumes:
+      - signer_data:/var/lib/mysql
+    image: mariadb:10.4
+    command: mysqld --innodb_file_per_table
+volumes:
+  notary_data:
+    external: false
+  signer_data:
+    external: false
+networks:
+  notary_db_net:
+    external: false
+  signer_db_net:
+    external: false
+  signer_net:
+    external: false

@@ -1,0 +1,12 @@
+fixtures/intermediate-ca.crt
+fixtures/notary-escrow.crt
+fixtures/notary-escrow.key
+fixtures/notary-server.crt
+fixtures/notary-server.key
+fixtures/notary-signer.crt
+fixtures/notary-signer.key
+fixtures/root-ca.crt
+fixtures/secure.example.com.crt
+fixtures/secure.example.com.key
+fixtures/self-signed_docker.com-notary.crt
+fixtures/self-signed_secure.example.com.crt
