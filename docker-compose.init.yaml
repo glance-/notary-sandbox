@@ -21,8 +21,10 @@ services:
       - ./notarysql/mysql-initdb.d:/docker-entrypoint-initdb.d
     environment:
         MYSQL_ROOT_PASSWORD: "${NOTARY_DB_ROOT_PW}"
+        NOTARY_DB_SERVER_PW: "${NOTARY_DB_SERVER_PW}"
   signer_db:
     volumes:
       - ./notarysql/mysql-initdb.d:/docker-entrypoint-initdb.d
     environment:
         MYSQL_ROOT_PASSWORD: "${SIGNER_DB_ROOT_PW}"
+        SIGNER_DB_SIGNER_PW: "${SIGNER_DB_SIGNER_PW}"

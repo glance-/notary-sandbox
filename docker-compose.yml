@@ -26,6 +26,7 @@ services:
     environment:
         NOTARY_SIGNER_DEFAULT_ALIAS: passwordalias1
         NOTARY_SIGNER_PASSWORDALIAS1: "${NOTARY_SIGNER_PASSWORDALIAS1}"
+        NOTARY_SIGNER_STORAGE_DB_URL: "signer:${SIGNER_DB_SIGNER_PW}@tcp(mysql:3306)/notarysigner?parseTime=True"
     networks:
       - signer_db_net
       - signer_net
