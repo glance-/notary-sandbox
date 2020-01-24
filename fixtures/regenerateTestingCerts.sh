@@ -128,6 +128,31 @@ cat "intermediate-ca.crt" >> "notary-escrow.crt"
 
 rm "notary-escrow.cnf" "notary-escrow.csr"
 
+# Then generate registry-server
+openssl genrsa -out "registry-server.key" 4096
+
+# Use the existing registry-server key
+openssl req -new -key "registry-server.key" -out "registry-server.csr" -sha256 \
+        -subj '/C=US/ST=CA/L=San Francisco/O=Docker/CN=registry-server'
+
+cat > "registry-server.cnf" <<EOL
+[registry_server]
+authorityKeyIdentifier=keyid,issuer
+basicConstraints = critical,CA:FALSE
+extendedKeyUsage=serverAuth,clientAuth
+keyUsage = critical, digitalSignature, keyEncipherment
+subjectAltName = DNS:registry-server, DNS:registryserver, DNS:localhost, IP:127.0.0.1
+subjectKeyIdentifier=hash
+EOL
+
+openssl x509 -req -days 750 -in "registry-server.csr" -sha256 \
+        -CA "intermediate-ca.crt" -CAkey "intermediate-ca.key"  -CAcreateserial \
+        -out "registry-server.crt" -extfile "registry-server.cnf" -extensions registry_server
+# append the intermediate cert to this one to make it a proper bundle
+cat "intermediate-ca.crt" >> "registry-server.crt"
+
+rm "registry-server.cnf" "registry-server.csr"
+
 
 # Then generate secure.example.com
 openssl genrsa -out "secure.example.com.key" 4096
@@ -150,6 +175,8 @@ openssl x509 -req -days 750 -in "secure.example.com.csr" -sha256 \
         -CA "intermediate-ca.crt" -CAkey "intermediate-ca.key"  -CAcreateserial \
         -out "secure.example.com.crt" -extfile "secure.example.com.cnf" -extensions secure.example.com
 rm "secure.example.com.cnf" "secure.example.com.csr"
+
+# Cleanup
 rm "intermediate-ca.key" "intermediate-ca.srl"
 
 
