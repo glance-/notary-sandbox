@@ -36,6 +36,7 @@ services:
         - ./fixtures/notary-signer.crt:/certs/notary-signer.crt:ro
         - ./fixtures/notary-signer.key:/certs/notary-signer.key:ro
         - ./fixtures/notary-server.crt:/certs/notary-server.crt:ro
+
   notary_db:
     networks:
         notary_db_net:
@@ -45,6 +46,7 @@ services:
       - notary_data:/var/lib/mysql
     image: mariadb:10.4
     command: mysqld --innodb_file_per_table
+
   signer_db:
     networks:
         signer_db_net:
@@ -54,11 +56,15 @@ services:
       - signer_data:/var/lib/mysql
     image: mariadb:10.4
     command: mysqld --innodb_file_per_table
+
+
 volumes:
   notary_data:
     external: false
   signer_data:
     external: false
+
+
 networks:
   notary_db_net:
     external: false
