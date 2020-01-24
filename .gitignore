@@ -10,3 +10,6 @@ fixtures/secure.example.com.crt
 fixtures/secure.example.com.key
 fixtures/self-signed_docker.com-notary.crt
 fixtures/self-signed_secure.example.com.crt
+.env
+.init
+.generate_fixtures
