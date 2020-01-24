@@ -1,6 +1,8 @@
 version: "3.7"
 services:
   notaryserver:
+    restart: "no"
+    entrypoint: /bin/true
 
   notary_migrator:
     image: migrate/migrate
@@ -16,6 +18,8 @@ services:
       - notary_db
 
   notarysigner:
+    restart: "no"
+    entrypoint: /bin/true
 
   signer_migrator:
     image: migrate/migrate
