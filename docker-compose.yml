@@ -22,6 +22,9 @@ services:
 
   notarysigner:
     image: notary:signer
+    # Signer starts before db, and won't re-connect
+    # so it needs a restarter.
+    restart: on-failure
     command: -config signer-config.json
     environment:
         NOTARY_SIGNER_DEFAULT_ALIAS: passwordalias1
