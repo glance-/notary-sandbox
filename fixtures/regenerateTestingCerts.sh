@@ -28,7 +28,7 @@ EOL
 
 openssl x509 -req -days 3650 -in "root-ca.csr" -signkey "root-ca.key" -sha256 \
         -out "root-ca.crt" -extfile "root-ca.cnf" -extensions root_ca
-cp "root-ca.crt" "../cmd/notary/root-ca.crt"
+#cp "root-ca.crt" "../cmd/notary/root-ca.crt"
 
 rm "root-ca.cnf" "root-ca.csr"
 
@@ -54,6 +54,8 @@ rm "intermediate-ca.cnf" "intermediate-ca.csr"
 rm "root-ca.key" "root-ca.srl"
 
 # Then generate notary-server
+openssl genrsa -out "notary-server.key" 4096
+
 # Use the existing notary-server key
 openssl req -new -key "notary-server.key" -out "notary-server.csr" -sha256 \
         -subj '/C=US/ST=CA/L=San Francisco/O=Docker/CN=notary-server'
@@ -77,6 +79,8 @@ cat "intermediate-ca.crt" >> "notary-server.crt"
 rm "notary-server.cnf" "notary-server.csr"
 
 # Then generate notary-signer
+openssl genrsa -out "notary-signer.key" 4096
+
 # Use the existing notary-signer key
 openssl req -new -key "notary-signer.key" -out "notary-signer.csr" -sha256 \
         -subj '/C=US/ST=CA/L=San Francisco/O=Docker/CN=notary-signer'
@@ -100,6 +104,8 @@ cat "intermediate-ca.crt" >> "notary-signer.crt"
 rm "notary-signer.cnf" "notary-signer.csr"
 
 # Then generate notary-escrow
+openssl genrsa -out "notary-escrow.key" 4096
+
 # Use the existing notary-escrow key
 openssl req -new -key "notary-escrow.key" -out "notary-escrow.csr" -sha256 \
         -subj '/C=US/ST=CA/L=San Francisco/O=Docker/CN=notary-escrow'
@@ -124,6 +130,8 @@ rm "notary-escrow.cnf" "notary-escrow.csr"
 
 
 # Then generate secure.example.com
+openssl genrsa -out "secure.example.com.key" 4096
+
 # Use the existing secure.example.com key
 openssl req -new -key "secure.example.com.key" -out "secure.example.com.csr" -sha256 \
         -subj '/C=US/ST=CA/L=San Francisco/O=Docker/CN=secure.example.com'
