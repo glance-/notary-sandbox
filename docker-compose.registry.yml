@@ -1,0 +1,26 @@
+---
+version: '3.7'
+
+services:
+    registry:
+        image: registry:2
+        ports:
+            - 127.0.0.1:5000:5000
+        environment:
+            #REGISTRY_HTTP_TLS_CLIENTCAS: " - /fixtures/root-ca.crt"
+            REGISTRY_LOG_FIELDS_SERVICE: registry
+            REGISTRY_STORAGE_DELETE_ENABLED: "true"
+            REGISTRY_HTTP_TLS_CERTIFICATE: /fixtures/registry-server.crt
+            REGISTRY_HTTP_TLS_KEY: /fixtures/registry-server.key
+            REGISTRY_HTTP_HEADERS_Strict-Transport-Security: "[max-age=31536000 ; includeSubDomains]"
+            REGISTRY_HTTP_HEADERS_X-Frame-Options: "[SAMEORIGIN]"
+            REGISTRY_HTTP_HEADERS_X-Content-Type-Options: "[nosniff]"
+        volumes:
+            - ./fixtures/root-ca.crt:/fixtures/root-ca.crt:ro
+            - ./fixtures/registry-server.crt:/fixtures/registry-server.crt:ro
+            - ./fixtures/registry-server.key:/fixtures/registry-server.key:ro
+            - registry_data:/var/lib/registry:rw
+
+volumes:
+  registry_data:
+    external: false
