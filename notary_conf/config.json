@@ -1,0 +1,10 @@
+{
+	"trust_dir" : "~/.docker/trust",
+	"remote_server": {
+		"url": "https://notary-server",
+		"root_ca": "../.docker/tls/notary-server/ca.crt",
+		"tls_client_cert": "../.docker/tls/notary-server/client.cert",
+		"tls_client_key": "../.docker/tls/notary-server/client.key"
+	}
+}
+

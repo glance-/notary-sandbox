@@ -1,0 +1,19 @@
+---
+version: '3.7'
+
+services:
+    notary-server-auth:
+        image: docker-notary-server-auth
+        ports:
+            - 127.0.0.1:443:443
+        environment:
+            SERVER_NAME: notary-server
+        volumes:
+            - ./fixtures/intermediate-ca.crt:/etc/ssl/certs/notary-server-chain.crt:ro
+            - ./fixtures/notary-server.key:/etc/ssl/private/notary-server.key:ro
+            - ./fixtures/notary-server.crt:/etc/ssl/certs/notary-server.crt:ro
+            - ./fixtures/root-ca.crt:/etc/ssl/certs/notary-server-client-ca.crt:ro
+
+volumes:
+  registry_data:
+    external: false
