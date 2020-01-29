@@ -62,3 +62,25 @@ config_hosts:
 	@printf "%s notary-server\n" $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' notary_notaryserver_1) | sudo tee -a /etc/hosts
 	@printf "%s notary-server\n" $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' notary_notary-server-auth_1) | sudo tee -a /etc/hosts
 	@printf "%s registry-server\n" $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' notary_registry_1) | sudo tee -a /etc/hosts
+
+client_env: .client_env
+.client_env:
+	rm -f $@-new $@
+	touch $@-new
+	for VAR in ROOT_PASSPHRASE TARGETS_PASSPHRASE REPOSITORY_PASSPHRASE SNAPSHOT_PASSPHRASE DELEGATION_PASSPHRASE ; do \
+		PW="$$(pwgen -s 20 1)" ; \
+		echo "NOTARY_$$VAR=$$PW" >> $@-new ; \
+		echo "DOCKER_CONTENT_TRUST_$$VAR=$$PW" >> $@-new ; \
+	done
+	mv $@-new $@
+
+DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=
+TEST_PUSH_TAG=latest
+
+test_push_root: DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=$(shell grep ^DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE .client_env)
+test_push_root: test_push
+
+test_push: client_env
+	docker pull ubuntu:$(TEST_PUSH_TAG)
+	docker tag ubuntu:$(TEST_PUSH_TAG) registry-server:5000/ubuntu:$(TEST_PUSH_TAG)
+	env DOCKER_CONTENT_TRUST_SERVER=https://notary-server DOCKER_CONTENT_TRUST=1 $(DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE) $(shell grep ^DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE .client_env) docker push registry-server:5000/ubuntu:$(TEST_PUSH_TAG)

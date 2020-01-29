@@ -13,3 +13,4 @@ fixtures/self-signed_secure.example.com.crt
 .env
 .init
 .generate_fixtures
+.client_env
