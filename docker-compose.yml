@@ -4,9 +4,11 @@ services:
     image: notary:server
     command: -config server-config.json
     networks:
-      - default
-      - notary_db_net
-      - signer_net
+      default:
+        aliases:
+          - notaryserver
+      notary_db_net:
+      signer_net:
     ports:
       - "8080"
       - "4443:4443"

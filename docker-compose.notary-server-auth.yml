@@ -3,11 +3,15 @@ version: '3.7'
 
 services:
     notary-server-auth:
-        image: docker-notary-server-auth
+        image: docker.sunet.se/sunet/docker-registry-auth
         ports:
             - 127.0.0.1:443:443
         environment:
             SERVER_NAME: notary-server
+            SSLVerifyDepth: 2
+            # proxy to alias, so we don't need to care about compose project name.
+            # No / in the end!
+            PROXY_TARGET: https://notaryserver:4443
         volumes:
             - ./fixtures/intermediate-ca.crt:/etc/ssl/certs/notary-server-chain.crt:ro
             - ./fixtures/notary-server.key:/etc/ssl/private/notary-server.key:ro
