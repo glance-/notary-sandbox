@@ -1,0 +1,33 @@
+Notary är en fancy mekanism för att resolva docker-image-taggar till
+sha256'or.
+
+Notary är fett komplex, med server-biten och signer-biten, databaser,
+nyckelhantering och auth-proxy.
+
+* Root-nyckel på offline-hsm
+  - Yubikey piv stöd finns redan
+* Ev. signer-nycklar på hsm?
+* skärma av signer från allt annat nät än att prata med server?
+* separata VM'ar för signer och server?
+* Auth framför server, stödjer bara token officiellt, testa med TLS?
+ - YAY, TLS funkar!
+
+
+Annat användningsområde för Notary är att spara byggda git-hasher i för
+att garantera att git-vektorn inte går bakåt.
+Detta för att skydda oss mot en ev. rollback-of-history-attack, då en
+attacker skulle kunna backa git-ref'ar till en äldre, osäker version
+och få ci att bygga och signera den, som sedan deployas och går att
+attakeras. Stoppar byggen av force-pushes, då de inte är ett superset
+av tidigare historik.
+
+
+Alternativ 1:
+
+Stoppa sha256'orna direkt i orkestreringen, och på så sätt ha trust hela
+vägen utan att involvera notary
+
+
+Alternativ 2:
+Låta ci.sunet.se bygga en databas vilken orkestreringen kan läsa och
+resolva taggar där. Går att göra som helt side-channel, alt, authoritative.
