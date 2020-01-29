@@ -1,3 +1,5 @@
+COMPOSE_PROJECT=$(shell basename $(PWD))
+
 all: up
 
 up: init
@@ -27,15 +29,15 @@ init: .init
 	touch $@
 
 down:
-	docker-compose -f docker-compose.yml -f docker-compose.init.yml down
+	docker-compose -f docker-compose.yml -f docker-compose.init.yml -f docker-compose.registry.yml -f docker-compose.notary-server-auth.yml down
 
 stop:
-	docker-compose -f docker-compose.yml -f docker-compose.init.yml stop
+	docker-compose -f docker-compose.yml -f docker-compose.init.yml -f docker-compose.registry.yml -f docker-compose.notary-server-auth.yml stop
 
 clean:
 	rm -f .init .env
 	docker-compose -f docker-compose.yml -f docker-compose.init.yml -f docker-compose.registry.yml -f docker-compose.notary-server-auth.yml rm -sfv
-	-docker volume rm notary_notary_data notary_signer_data notary_registry_data
+	-docker volume rm $(COMPOSE_PROJECT)_notary_data $(COMPOSE_PROJECT)_signer_data $(COMPOSE_PROJECT)_registry_data
 
 clean_fixtures:
 	rm -f .generate_fixtures
@@ -59,9 +61,9 @@ config_registry:
 
 # We can't use any ip adress in 127.0.0.0/8 because docker doesn't care about certs when a ip resolves to that.
 config_hosts:
-	@printf "%s notary-server\n" $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' notary_notaryserver_1) | sudo tee -a /etc/hosts
-	@printf "%s notary-server\n" $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' notary_notary-server-auth_1) | sudo tee -a /etc/hosts
-	@printf "%s registry-server\n" $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' notary_registry_1) | sudo tee -a /etc/hosts
+	@printf "%s notary-server\n" $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' $(COMPOSE_PROJECT)_notaryserver_1) | sudo tee -a /etc/hosts
+	@printf "%s notary-server\n" $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' $(COMPOSE_PROJECT)_notary-server-auth_1) | sudo tee -a /etc/hosts
+	@printf "%s registry-server\n" $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' $(COMPOSE_PROJECT)_registry_1) | sudo tee -a /etc/hosts
 
 client_env: .client_env
 .client_env:
